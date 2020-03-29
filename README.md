@@ -177,5 +177,70 @@ third bar
 
 ## kafka Connectの使用
 
-TBD
+標準出力からではなく、他のデータソースからのデータ使用し、Kafkaから他のシステムにデータをエクスポートする必要がある。
+多くのシステムでは、カスタム統合コードを作成する代わりに、Kafka Connectを使用してデータをインポートまたはエクスポートする。
 
+以下のコマンドを使用し、テストデータを作成する。
+
+```
+% echo -e "foo\nbar" > test.txt
+% cat test.txt 
+foo
+bar
+```
+
+スタンドアロンモードで実行される2つのコネクタを起動する[単一のローカルな専用プロセスで実行される]。パラメーターとして3つの構成ファイルを提供します。1つ目は常にKafka Connectプロセスの構成であり、接続するKafkaブローカーやデータのシリアル化形式などの一般的な構成が含まれる。残りの構成ファイルはそれぞれ、作成するコネクターを指定します。これらのファイルには、一意のコネクタ名、インスタンス化するコネクタクラス、およびコネクタに必要なその他の構成が含まれる。
+
+以下のコマンドを実行し、コネクタを起動する。
+
+```
+% bin/connect-standalone.sh config/connect-standalone.properties config/connect-file-source.properties config/connect-file-sink.properties
+[2020-03-29 17:58:49,395] INFO Kafka Connect standalone worker initializing ... (org.apache.kafka.connect.cli.ConnectStandalone:69)
+〜省略
+```
+
+上記でconnectを起動すると、test.sink.txtが作成されているのが確認出来る。
+
+```
+% pwd
+<HOME>>/mylabs/kafka_2.12-2.4.0.redhat-00005
+% ls
+LICENSE		bin		docs		logs		test.txt
+NOTICE		config		libs		test.sink.txt
+```
+
+ファイルの内容を確認する。
+
+```
+% cat test.sink.txt 
+foo
+bar
+```
+
+test.txtに追記する。
+
+```
+% echo "\nhoge" >> test.txt
+```
+
+追記されたことを確認する。
+
+```
+% cat test.sink.txt
+```
+
+コマンドを使用して内容を確認することも出来る。
+```
+% bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic connect-test --from-beginning
+{"schema":{"type":"string","optional":false},"payload":"foo"}
+{"schema":{"type":"string","optional":false},"payload":"bar"}
+{"schema":{"type":"string","optional":false},"payload":""}
+{"schema":{"type":"string","optional":false},"payload":"hoge"}
+{"schema":{"type":"string","optional":false},"payload":"r line"}
+```
+
+次
+「Run Kafka Streams Demo Application」
+https://kafka.apache.org/24/documentation/streams/quickstart
+
+以上
