@@ -1,16 +1,23 @@
 # amq-stream1.4-execute-local-pc
 ローカルPCでAMQ Streamを動かしてみた[Mac]
 
+## 前提条件
+
+Apache KafkaのQuick Startの内容がそのまま、AMQ Streamのインストーラーで実行出来ることの確認
+
 参考：https://kafka.apache.org/quickstart
 
-1. レッドハットカスタマーポータルよりインストーラーをダウンロードする。
+
+## 実行
+
+１. レッドハットカスタマーポータルよりインストーラーをダウンロードする。
 
 amq-streams-1.4.0-bin.zip
 
-2. ダウンロードしたzipファイルを任意の場所に展開する
+２. ダウンロードしたzipファイルを任意の場所に展開する
 /Users/kmurakat/mylabs/kafka_2.12-2.4.0.redhat-00005
 
-3. コマンドプロンプトより、zookeeperが必要なため起動する。
+３. コマンドプロンプトより、zookeeperが必要なため起動する。
 
 ```
 % cd <HOME>/mylabs/kafka_2.12-2.4.0.redhat-00005
@@ -19,7 +26,7 @@ amq-streams-1.4.0-bin.zip
 [2020-03-29 16:46:00,987] INFO Using checkIntervalMs=60000 maxPerMinute=10000 (org.apache.zookeeper.server.ContainerManager)
 ```
 
-4. 別コマンドプロンプトより、kakfaを起動する。
+４. 別コマンドプロンプトより、kakfaを起動する。
 
 ```
 % cd <HOME>/mylabs/kafka_2.12-2.4.0.redhat-00005
@@ -28,20 +35,20 @@ amq-streams-1.4.0-bin.zip
 [2020-03-29 16:47:35,012] INFO [KafkaServer id=0] started (kafka.server.KafkaServer)
 ```
 
-5. 別コマンドプロンプトで単一のパーティションと1つのレプリカのみを持つ「test」という名前のトピックを作成する。
+５. 別コマンドプロンプトで単一のパーティションと1つのレプリカのみを持つ「test」という名前のトピックを作成する。
 
 ```
 % cd <HOME>/mylabs/kafka_2.12-2.4.0.redhat-00005
 % bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic test
 ```
 
-6. 作成したトピックを確認する。
+６. 作成したトピックを確認する。
 ```
 % bin/kafka-topics.sh --list --bootstrap-server localhost:9092
 test
 ```
 
-7. プロデューサーを実行し、コンソールにいくつかのメッセージを入力してKafkaサーバーに送信します。
+７. プロデューサーを実行し、コンソールにいくつかのメッセージを入力してKafkaサーバーに送信します。
 ※Topicを作成したコマンドプロンプト
 
 ```
@@ -51,7 +58,7 @@ test
 >first bar
 ```
 
-8. コンシューマを実行し、プロデューサーが送信したメッセージを受信し、標準出力へ出力する。
+８. コンシューマを実行し、プロデューサーが送信したメッセージを受信し、標準出力へ出力する。
 ※別プロンプトで実行
 
 ```
@@ -62,11 +69,10 @@ first foo
 first bar
 ```
 
-以上
 
-■マルチブローカーを使用したメッセージの送受信
+## マルチブローカーを使用したメッセージの送受信
 
-1. ブローカー毎の設定ファイルを作成する。
+１. ブローカー毎の設定ファイルを作成する。
 ※先程使用したプロデューサーもしくはコンシュマーのコマンドプロンプトを使用する。
 ※zookeeperとkafkaのプロンプトはそのままにして、プロセスが起動している状態とする。
 
@@ -75,7 +81,7 @@ first bar
 % cp config/server.properties config/server-2.properties
 ```
 
-2. 同一PCで複数のブローカーを起動するため、ノードやポート、ログディレクトリが重複しないように編集する。
+２. 同一PCで複数のブローカーを起動するため、ノードやポート、ログディレクトリが重複しないように編集する。
 
 ```
 % vi config/server-1.properties:
@@ -89,7 +95,7 @@ first bar
     log.dirs=/tmp/kafka-logs-2
 ```
 
-3. 別プロンプトで上記編集したサーバープロセスを起動し、計3つのKafkaサーバーを起動する。
+３. 別プロンプトで上記編集したサーバープロセスを起動し、計3つのKafkaサーバーを起動する。
 
 ```
 % bin/kafka-server-start.sh config/server-1.properties &
@@ -97,13 +103,13 @@ first bar
 ```
 
 
-4. 複数係数[replication-factor]が3の新しいトピックを作成する。
+４. 複数係数[replication-factor]が3の新しいトピックを作成する。
 
 ```
 % bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 3 --partitions 1 --topic my-replicated-topic
 ```
 
-5. 作成したトピックを確認する。
+５. 作成したトピックを確認する。
 
 ```
 % bin/kafka-topics.sh --describe --bootstrap-server localhost:9092 --topic my-replicated-topic
@@ -118,7 +124,7 @@ Topic: my-replicated-topic	PartitionCount: 1	ReplicationFactor: 3	Configs: segme
 「isr」は「同期」されたレプリカのセットです。これは、現在有効でリーダーに追いついているレプリカリストのサブセットです。
 この例では、ノード2がトピックの唯一のパーティションのリーダーであることに注意してください。
 
-6. 新しく作成したトピックにメッセージを送信[publish]する。
+６. 新しく作成したトピックにメッセージを送信[publish]する。
 
 ```
 % bin/kafka-console-producer.sh --broker-list localhost:9092 --topic my-replicated-topic
@@ -127,7 +133,7 @@ Topic: my-replicated-topic	PartitionCount: 1	ReplicationFactor: 3	Configs: segme
 >second bar
 ```
 
-7. メッセージを受信する。
+７. メッセージを受信する。
 
 ```
 % bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --from-beginning --topic my-replicated-topic
@@ -136,7 +142,7 @@ second foo
 second bar
 ```
 
-8. フォールトトレランスをテストする。ブローカー2がリーダーとして機能していたので、プロセスを殺す。
+８. フォールトトレランスをテストする。ブローカー2がリーダーとして機能していたので、プロセスを殺す。
 
 ```
 % ps aux | grep server-2.properties
@@ -145,7 +151,7 @@ second bar
 kmurakat          9641   0.0  0.0  4271368    688 s002  R+    5:29PM   0:00.01 grep server-2.properties
 ```
 
-9. リーダーがフォロワーの1人に切り替わり、ノード2は同期レプリカセットに存在しなくなった。
+９. リーダーがフォロワーの1人に切り替わり、ノード2は同期レプリカセットに存在しなくなった。
 ```
 % bin/kafka-topics.sh --describe --bootstrap-server localhost:9092 --topic my-replicated-topic
 Topic: my-replicated-topic	PartitionCount: 1	ReplicationFactor: 3	Configs: segment.bytes=1073741824
@@ -153,7 +159,7 @@ Topic: my-replicated-topic	PartitionCount: 1	ReplicationFactor: 3	Configs: segme
 kmurakat@kmurakat-mac kafka_2.12-2.4.0.redhat-00005 % 
 ```
 
-10. メッセージを送信する。※元のリーダーがダウンしてもメッセージは送信出来る。
+１０. メッセージを送信する。※元のリーダーがダウンしてもメッセージは送信出来る。
 ```
 % bin/kafka-console-producer.sh --broker-list localhost:9092 --topic my-replicated-topic
 >thrid hoge
@@ -161,11 +167,15 @@ kmurakat@kmurakat-mac kafka_2.12-2.4.0.redhat-00005 %
 >third bar
 ```
 
-11. メッセージを受信する。※元のリーダーがダウンしてもメッセージは受信出来る。
+１１. メッセージを受信する。※元のリーダーがダウンしてもメッセージは受信出来る。
 ```
 % bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --from-beginning --topic my-replicated-topic
 thrid hoge
 third foo
 third bar
 ```
+
+## kafka Connectの使用
+
+TBD
 
