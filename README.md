@@ -1,6 +1,7 @@
 # amq-stream1.4-execute-local-pc
 ローカルPCでAMQ Streamを動かしてみた[Mac]
 
+
 ## 前提条件
 
 Apache KafkaのQuick Startの内容がそのまま、AMQ Streamのインストーラーで実行出来ることの確認
@@ -15,9 +16,9 @@ Apache KafkaのQuick Startの内容がそのまま、AMQ Streamのインスト�
 amq-streams-1.4.0-bin.zip
 
 ２. ダウンロードしたzipファイルを任意の場所に展開する
-/Users/kmurakat/mylabs/kafka_2.12-2.4.0.redhat-00005
+<HOME>/mylabs/kafka_2.12-2.4.0.redhat-00005
 
-３. コマンドプロンプトより、zookeeperが必要なため起動する。
+３. コマンドプロンプトより、zookeeperを起動する。
 
 ```
 % cd <HOME>/mylabs/kafka_2.12-2.4.0.redhat-00005
