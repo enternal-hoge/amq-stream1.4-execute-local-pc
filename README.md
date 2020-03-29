@@ -4,9 +4,15 @@
 
 ## 前提条件
 
-Apache KafkaのQuick Startの内容がそのまま、AMQ Streamのインストーラーで実行出来ることの確認
+製品マニュアルにはRHELで動かす、前提で書かれていてそれ以外の記載がなかった。
+https://access.redhat.com/documentation/en-us/red_hat_amq/7.6/html/release_notes_for_amq_streams_1.4_on_rhel/index
+
+そのため、Apache KafkaのQuick Startの内容がそのまま、AMQ Streamのインストーラーで実行し、かつローカルPCで実行できることの確認を込めて記載する。
 
 参考：https://kafka.apache.org/quickstart
+
+なお、Aache KafkaのインストーラーとRed Hat AMQ Streamのインストーラーのバイナリがほぼ同じディレクトリ構造やファイル構成であったため、
+恐らくは問題なくうごくことを前提として記載する。
 
 
 ## 実行
